@@ -3,8 +3,6 @@
  * @fileOverview Identifies a movie from a YouTube clip link.
  *
  * - identifyMovie - A function that takes a YouTube link and identifies the movie.
- * - IdentifyMovieInput - The input type for the identifyMovie function.
- * - IdentifyMovieOutput - The return type for the identifyMovie function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -13,7 +11,6 @@ import {z} from 'genkit';
 const IdentifyMovieInputSchema = z.object({
   youtubeUrl: z.string().describe('The YouTube clip link to identify the movie from.'),
 });
-export type IdentifyMovieInput = z.infer<typeof IdentifyMovieInputSchema>;
 
 const IdentifyMovieOutputSchema = z.object({
   movieFound: z.boolean().describe('Whether a movie was successfully identified from the source.'),
@@ -21,12 +18,12 @@ const IdentifyMovieOutputSchema = z.object({
   movieDetails: z.string().describe('Additional details about the identified movie (e.g., release year, a brief plot summary). If not found, this will be an empty string.'),
   moviePosterUrl: z.string().describe("A URL for the movie poster image. Use a public, directly accessible URL. If not found, this will be an empty string."),
 });
-export type IdentifyMovieOutput = z.infer<typeof IdentifyMovieOutputSchema>;
 
+// Note: Type exports have been removed from this file.
 
 export async function identifyMovie(
-  input: IdentifyMovieInput
-): Promise<IdentifyMovieOutput> {
+  input: z.infer<typeof IdentifyMovieInputSchema>
+): Promise<z.infer<typeof IdentifyMovieOutputSchema>> {
   return identifyMovieFlow(input);
 }
 

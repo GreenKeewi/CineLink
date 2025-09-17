@@ -1,11 +1,23 @@
 'use server';
 
-import {
-  identifyMovie,
-  type IdentifyMovieInput,
-  type IdentifyMovieOutput,
-} from '@/ai/flows/identify-movie-from-youtube-clip';
+import { identifyMovie } from '@/ai/flows/identify-movie-from-youtube-clip';
 import { z } from 'zod';
+
+// Define the input and output types here, based on the AI flow's schemas.
+// This keeps the "use server" file clean of non-function exports.
+const IdentifyMovieInputSchema = z.object({
+  youtubeUrl: z.string(),
+});
+export type IdentifyMovieInput = z.infer<typeof IdentifyMovieInputSchema>;
+
+const IdentifyMovieOutputSchema = z.object({
+  movieFound: z.boolean(),
+  movieTitle: z.string(),
+  movieDetails: z.string(),
+  moviePosterUrl: z.string(),
+});
+export type IdentifyMovieOutput = z.infer<typeof IdentifyMovieOutputSchema>;
+
 
 type ActionResponse =
   | { success: true; data: IdentifyMovieOutput }
