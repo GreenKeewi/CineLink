@@ -15,8 +15,11 @@ const urlSchema = z.object({
 
 const videoSchema = z.object({
   sourceType: z.literal('video'),
-  videoDataUri: z.string().startsWith('data:video'),
+  videoDataUri: z.string().startsWith('data:video', { message: 'Invalid video file format.' }),
 });
+
+const inputSchema = z.discriminatedUnion('sourceType', [urlSchema, videoSchema]);
+
 
 type ActionResponse =
   | { success: true; data: IdentifyMovieOutput }
@@ -40,7 +43,7 @@ export async function identifyMovieAction(
     const videoDataUri = formData.get('videoDataUri') as string;
     const validation = videoSchema.safeParse({ sourceType, videoDataUri });
      if (!validation.success) {
-      return { success: false, error: "Invalid video file provided." };
+      return { success: false, error: validation.error.errors.map((e) => e.message).join(', ') };
     }
     input = { source: { type: 'video', videoDataUri: validation.data.videoDataUri } };
   } else {

@@ -75,7 +75,7 @@ const identifyMovieFlow = ai.defineFlow(
     outputSchema: IdentifyMovieOutputSchema,
   },
   async input => {
-    const {output} = await prompt({source: input.source});
+    const {output} = await prompt(input);
     return output!;
   }
 );
