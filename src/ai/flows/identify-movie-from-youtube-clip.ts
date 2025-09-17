@@ -1,8 +1,8 @@
 'use server';
 /**
- * @fileOverview Identifies a movie from a YouTube clip link or an uploaded video file.
+ * @fileOverview Identifies a movie from a YouTube clip link.
  *
- * - identifyMovie - A function that takes a YouTube link or video data and identifies the movie.
+ * - identifyMovie - A function that takes a YouTube link and identifies the movie.
  * - IdentifyMovieInput - The input type for the identifyMovie function.
  * - IdentifyMovieOutput - The return type for the identifyMovie function.
  */
@@ -11,13 +11,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const IdentifyMovieInputSchema = z.object({
-  youtubeUrl: z.string().optional().describe('The YouTube clip link to identify the movie from.'),
-  videoDataUri: z
-    .string()
-    .optional()
-    .describe(
-      "A video file of a movie clip, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
-    ),
+  youtubeUrl: z.string().describe('The YouTube clip link to identify the movie from.'),
 });
 export type IdentifyMovieInput = z.infer<typeof IdentifyMovieInputSchema>;
 
@@ -41,22 +35,17 @@ const prompt = ai.definePrompt({
   name: 'identifyMoviePrompt',
   input: {schema: IdentifyMovieInputSchema},
   output: {schema: IdentifyMovieOutputSchema},
-  prompt: `You are an expert movie identifier. You will be given a source which could be a YouTube clip URL or direct video data.
+  prompt: `You are an expert movie identifier. You will be given a YouTube clip URL.
 Your task is to accurately identify the movie from the provided source.
 
-- To do this, you must analyze the video content itself. If a YouTube URL is provided, also analyze the video's title, description, and comments.
+- To do this, you must analyze the video's title, description, and comments, in addition to the video content if possible from the URL.
 - If you can confidently identify the movie, set 'movieFound' to true.
 - Provide the 'movieTitle'.
 - Provide 'movieDetails', including the release year and a brief, one-sentence plot summary.
 - You MUST find and provide a valid, public URL for the movie's poster image in 'moviePosterUrl'.
 - If the source is invalid, not a movie clip, or you cannot confidently identify the movie, set 'movieFound' to false and return empty strings for the other fields.
 
-{{#if youtubeUrl}}
 Source: YouTube Clip Link: {{{youtubeUrl}}}
-{{/if}}
-{{#if videoDataUri}}
-Source: Video Content: {{media url=videoDataUri}}
-{{/if}}
 `,
 });
 

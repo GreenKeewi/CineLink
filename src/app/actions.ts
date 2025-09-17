@@ -14,35 +14,23 @@ type ActionResponse =
 export async function identifyMovieAction(
   formData: FormData
 ): Promise<ActionResponse> {
-  const sourceType = formData.get('sourceType');
-
-  let input: IdentifyMovieInput = {};
-
   try {
-    if (sourceType === 'url') {
-      const youtubeUrl = formData.get('youtubeUrl');
-      const result = z.string().url().safeParse(youtubeUrl);
-      if (!result.success) {
-        return { success: false, error: 'Please enter a valid YouTube URL.' };
-      }
-      input = { youtubeUrl: result.data };
-    } else if (sourceType === 'video') {
-      const videoDataUri = formData.get('videoDataUri') as string | null;
-
-      if (!videoDataUri || !videoDataUri.startsWith('data:video')) {
-         return { success: false, error: 'Invalid video file format or file is missing.' };
-      }
-      input = { videoDataUri: videoDataUri };
-    } else {
-      return { success: false, error: 'Invalid source type specified.' };
+    const youtubeUrl = formData.get('youtubeUrl');
+    const result = z.string().url().safeParse(youtubeUrl);
+    
+    if (!result.success) {
+      return { success: false, error: 'Please enter a valid YouTube URL.' };
     }
 
-    const result = await identifyMovie(input);
+    const input: IdentifyMovieInput = { youtubeUrl: result.data };
+    const aiResult = await identifyMovie(input);
+
     // Ensure the poster URL is a valid http(s) URL before returning.
-    if (result.moviePosterUrl && !result.moviePosterUrl.startsWith('http')) {
-      result.moviePosterUrl = '';
+    if (aiResult.moviePosterUrl && !aiResult.moviePosterUrl.startsWith('http')) {
+      aiResult.moviePosterUrl = '';
     }
-    return { success: true, data: result };
+    
+    return { success: true, data: aiResult };
   } catch (error) {
     console.error('Error identifying movie:', error);
     return {

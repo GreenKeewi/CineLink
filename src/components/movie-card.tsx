@@ -41,7 +41,7 @@ export default function MovieCard({
           : 'bg-card'
       )}
     >
-       <div className="relative aspect-video w-full overflow-hidden bg-muted">
+       <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
          {hasPoster ? (
             <Image
               src={imageUrl}
