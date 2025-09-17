@@ -31,7 +31,7 @@ const identifyMoviePrompt = ai.definePrompt({
   input: {schema: IdentifyMovieInputSchema},
   output: {schema: IdentifyMovieOutputSchema},
   prompt: `You are an expert movie identifier. You will be given a YouTube clip link.
-Your task is to identify the movie from the clip.
+Your task is to identify the movie from the clip. To do this, you should consider the video content, the video's title, description, and comments.
 
 - If you can confidently identify the movie, set 'movieFound' to true and provide the 'movieTitle' and 'movieDetails'.
 - If the link is invalid, not a movie clip, or you cannot identify the movie, set 'movieFound' to false and omit the other fields. Do not guess.
