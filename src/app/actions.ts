@@ -16,7 +16,7 @@ export async function identifyMovieAction(
 ): Promise<ActionResponse> {
   const sourceType = formData.get('sourceType');
 
-  let input: IdentifyMovieInput;
+  let input: IdentifyMovieInput = {};
 
   try {
     if (sourceType === 'url') {
@@ -25,14 +25,14 @@ export async function identifyMovieAction(
       if (!result.success) {
         return { success: false, error: 'Please enter a valid YouTube URL.' };
       }
-      input = { source: { type: 'url', url: result.data } };
+      input = { youtubeUrl: result.data };
     } else if (sourceType === 'video') {
       const videoDataUri = formData.get('videoDataUri') as string | null;
 
       if (!videoDataUri || !videoDataUri.startsWith('data:video')) {
          return { success: false, error: 'Invalid video file format or file is missing.' };
       }
-      input = { source: { type: 'video', videoDataUri: videoDataUri } };
+      input = { videoDataUri: videoDataUri };
     } else {
       return { success: false, error: 'Invalid source type specified.' };
     }
