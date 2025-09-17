@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 type Movie = {
   movieTitle: string;
   movieDetails: string;
+  moviePosterUrl: string;
 };
 
 export default function CineLinkMain() {
@@ -35,6 +36,7 @@ export default function CineLinkMain() {
         const newMovie: Movie = {
           movieTitle: result.data.movieTitle,
           movieDetails: result.data.movieDetails,
+          moviePosterUrl: result.data.moviePosterUrl,
         };
         setCurrentMovie(newMovie);
         setHistory((prevHistory) => [newMovie, ...prevHistory]);

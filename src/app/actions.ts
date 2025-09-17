@@ -32,6 +32,10 @@ export async function identifyMovieAction(
     const result = await identifyMovieFromYoutubeClip({
       youtubeClipLink: validation.data.youtubeUrl,
     });
+    // Ensure that if a movie poster is found, it's a valid URL
+    if (result.moviePosterUrl && !result.moviePosterUrl.startsWith('http')) {
+        result.moviePosterUrl = '';
+    }
     return { success: true, data: result };
   } catch (error) {
     console.error('Error identifying movie:', error);
