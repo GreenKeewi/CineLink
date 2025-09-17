@@ -59,10 +59,10 @@ Your task is to accurately identify the movie from the provided source.
 - If the source is invalid, not a movie clip, or you cannot confidently identify the movie, set 'movieFound' to false and return empty strings for the other fields.
 
 {{#if (eq source.type "url")}}
-YouTube Clip Link: {{{source.url}}}
+Source: YouTube Clip Link: {{{source.url}}}
 {{/if}}
 {{#if (eq source.type "video")}}
-Video Content: {{media url=source.videoDataUri}}
+Source: Video Content: {{media url=source.videoDataUri}}
 {{/if}}
 `,
 });
