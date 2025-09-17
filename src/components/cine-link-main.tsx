@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { identifyMovieAction } from '@/app/actions';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Film, Loader2, Link as LinkIcon, History } from 'lucide-react';
+import { Film, Loader2, Link as LinkIcon, History, SearchX } from 'lucide-react';
 import MovieCard from './movie-card';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
@@ -17,6 +17,7 @@ type Movie = {
 export default function CineLinkMain() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentMovie, setCurrentMovie] = useState<Movie | null>(null);
+  const [movieNotFound, setMovieNotFound] = useState(false);
   const [history, setHistory] = useState<Movie[]>([]);
   const { toast } = useToast();
 
@@ -24,14 +25,22 @@ export default function CineLinkMain() {
     event.preventDefault();
     setIsLoading(true);
     setCurrentMovie(null);
+    setMovieNotFound(false);
 
     const formData = new FormData(event.currentTarget);
     const result = await identifyMovieAction(formData);
 
     if (result.success && result.data) {
-      const newMovie = result.data;
-      setCurrentMovie(newMovie);
-      setHistory((prevHistory) => [newMovie, ...prevHistory]);
+      if (result.data.movieFound && result.data.movieTitle && result.data.movieDetails) {
+        const newMovie: Movie = {
+          movieTitle: result.data.movieTitle,
+          movieDetails: result.data.movieDetails,
+        };
+        setCurrentMovie(newMovie);
+        setHistory((prevHistory) => [newMovie, ...prevHistory]);
+      } else {
+        setMovieNotFound(true);
+      }
     } else {
       toast({
         variant: 'destructive',
@@ -88,6 +97,15 @@ export default function CineLinkMain() {
             key={currentMovie.movieTitle}
           >
             <MovieCard movie={currentMovie} isFeatured={true} />
+          </div>
+        )}
+        {movieNotFound && (
+          <div className="flex flex-col items-center justify-center gap-4 text-center animate-in fade-in-0 duration-500">
+            <SearchX className="h-10 w-10 text-destructive" />
+            <p className="text-muted-foreground">
+              Could not identify a movie from the provided link. Please try a
+              different one.
+            </p>
           </div>
         )}
       </div>
