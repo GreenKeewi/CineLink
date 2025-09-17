@@ -1,13 +1,21 @@
 'use server';
 
 import {
-  identifyMovieFromYoutubeClip,
-  IdentifyMovieOutput,
+  identifyMovie,
+  type IdentifyMovieInput,
+  type IdentifyMovieOutput,
 } from '@/ai/flows/identify-movie-from-youtube-clip';
 import { z } from 'zod';
 
-const schema = z.object({
+
+const urlSchema = z.object({
+  sourceType: z.literal('url'),
   youtubeUrl: z.string().url({ message: 'Please enter a valid YouTube URL.' }),
+});
+
+const videoSchema = z.object({
+  sourceType: z.literal('video'),
+  videoDataUri: z.string().startsWith('data:video'),
 });
 
 type ActionResponse =
@@ -17,22 +25,30 @@ type ActionResponse =
 export async function identifyMovieAction(
   formData: FormData
 ): Promise<ActionResponse> {
-  const youtubeUrl = formData.get('youtubeUrl') as string;
+  const sourceType = formData.get('sourceType') as 'url' | 'video';
+  
+  let input: IdentifyMovieInput;
 
-  const validation = schema.safeParse({ youtubeUrl });
-
-  if (!validation.success) {
-    return {
-      success: false,
-      error: validation.error.errors.map((e) => e.message).join(', '),
-    };
+  if (sourceType === 'url') {
+    const youtubeUrl = formData.get('youtubeUrl') as string;
+    const validation = urlSchema.safeParse({ sourceType, youtubeUrl });
+    if (!validation.success) {
+      return { success: false, error: validation.error.errors.map((e) => e.message).join(', ') };
+    }
+    input = { source: { type: 'url', url: validation.data.youtubeUrl } };
+  } else if (sourceType === 'video') {
+    const videoDataUri = formData.get('videoDataUri') as string;
+    const validation = videoSchema.safeParse({ sourceType, videoDataUri });
+     if (!validation.success) {
+      return { success: false, error: "Invalid video file provided." };
+    }
+    input = { source: { type: 'video', videoDataUri: validation.data.videoDataUri } };
+  } else {
+    return { success: false, error: 'Invalid source type.' };
   }
 
   try {
-    const result = await identifyMovieFromYoutubeClip({
-      youtubeClipLink: validation.data.youtubeUrl,
-    });
-    // Ensure that if a movie poster is found, it's a valid URL
+    const result = await identifyMovie(input);
     if (result.moviePosterUrl && !result.moviePosterUrl.startsWith('http')) {
         result.moviePosterUrl = '';
     }
@@ -41,7 +57,7 @@ export async function identifyMovieAction(
     console.error('Error identifying movie:', error);
     return {
       success: false,
-      error: 'AI analysis failed. Please check the link or try again later.',
+      error: 'AI analysis failed. Please check your input or try again later.',
     };
   }
 }

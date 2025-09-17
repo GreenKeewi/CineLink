@@ -41,6 +41,21 @@ export default function MovieCard({
           : 'bg-card'
       )}
     >
+       <div className="relative aspect-video w-full overflow-hidden bg-muted">
+         {hasPoster ? (
+            <Image
+              src={imageUrl}
+              alt={`Poster for ${movie.movieTitle}`}
+              fill
+              className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <Clapperboard className="h-16 w-16 text-muted-foreground" />
+            </div>
+          )}
+      </div>
       <CardHeader>
         <CardTitle
           className={cn(
@@ -51,10 +66,10 @@ export default function MovieCard({
           {movie.movieTitle}
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col-reverse justify-between flex-grow sm:flex-col">
+      <CardContent className="flex-grow pt-0">
         <CardDescription
           className={cn(
-            'leading-relaxed mt-4 sm:mt-0',
+            'leading-relaxed',
             isFeatured
               ? 'text-base text-foreground/80'
               : 'text-sm text-muted-foreground'
@@ -62,25 +77,6 @@ export default function MovieCard({
         >
           {movie.movieDetails}
         </CardDescription>
-        {(isFeatured || hasPoster) && (
-          <div className="mb-4 aspect-video overflow-hidden rounded-md relative sm:order-first bg-muted flex items-center justify-center">
-            {hasPoster ? (
-              <Image
-                src={imageUrl}
-                alt={`Poster for ${movie.movieTitle}`}
-                fill
-                className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-            ) : (
-                isFeatured && (
-                    <div className="mb-4 aspect-video overflow-hidden rounded-md relative sm:order-first bg-muted flex items-center justify-center w-full h-full">
-                        <Clapperboard className="w-16 h-16 text-muted-foreground" />
-                    </div>
-                )
-            )}
-          </div>
-        )}
       </CardContent>
     </Card>
   );
