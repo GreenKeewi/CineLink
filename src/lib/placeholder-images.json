@@ -1,3 +1,10 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "movie-placeholder",
+      "description": "Abstract movie reel",
+      "imageUrl": "https://picsum.photos/seed/movie/1280/720",
+      "imageHint": "movie cinema"
+    }
+  ]
 }
