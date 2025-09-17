@@ -19,8 +19,6 @@ const IdentifyMovieOutputSchema = z.object({
   moviePosterUrl: z.string().describe("A URL for the movie poster image. Use a public, directly accessible URL. If not found, this will be an empty string."),
 });
 
-// Note: Type exports have been removed from this file.
-
 export async function identifyMovie(
   input: z.infer<typeof IdentifyMovieInputSchema>
 ): Promise<z.infer<typeof IdentifyMovieOutputSchema>> {
