@@ -18,25 +18,25 @@ export async function identifyMovieAction(
 
   let input: IdentifyMovieInput;
 
-  if (sourceType === 'url') {
-    const youtubeUrl = formData.get('youtubeUrl');
-    const result = z.string().url().safeParse(youtubeUrl);
-    if (!result.success) {
-      return { success: false, error: 'Please enter a valid YouTube URL.' };
-    }
-    input = { source: { type: 'url', url: result.data } };
-  } else if (sourceType === 'video') {
-    const videoDataUri = formData.get('videoDataUri');
-     const result = z.string().startsWith('data:video').safeParse(videoDataUri);
-    if (!result.success) {
-       return { success: false, error: 'Invalid video file format.' };
-    }
-    input = { source: { type: 'video', videoDataUri: result.data } };
-  } else {
-    return { success: false, error: 'Invalid source type specified.' };
-  }
-
   try {
+    if (sourceType === 'url') {
+      const youtubeUrl = formData.get('youtubeUrl');
+      const result = z.string().url().safeParse(youtubeUrl);
+      if (!result.success) {
+        return { success: false, error: 'Please enter a valid YouTube URL.' };
+      }
+      input = { source: { type: 'url', url: result.data } };
+    } else if (sourceType === 'video') {
+      const videoDataUri = formData.get('videoDataUri') as string | null;
+
+      if (!videoDataUri || !videoDataUri.startsWith('data:video')) {
+         return { success: false, error: 'Invalid video file format or file is missing.' };
+      }
+      input = { source: { type: 'video', videoDataUri: videoDataUri } };
+    } else {
+      return { success: false, error: 'Invalid source type specified.' };
+    }
+
     const result = await identifyMovie(input);
     // Ensure the poster URL is a valid http(s) URL before returning.
     if (result.moviePosterUrl && !result.moviePosterUrl.startsWith('http')) {
