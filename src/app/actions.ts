@@ -7,24 +7,6 @@ import {
 } from '@/ai/flows/identify-movie-from-youtube-clip';
 import { z } from 'zod';
 
-const urlSchema = z.object({
-  sourceType: z.literal('url'),
-  youtubeUrl: z.string().url({ message: 'Please enter a valid YouTube URL.' }),
-});
-
-const videoSchema = z.object({
-  sourceType: z.literal('video'),
-  videoDataUri: z
-    .string()
-    .startsWith('data:video', { message: 'Invalid video file format.' }),
-});
-
-// This is a discriminated union. It will validate against one of the schemas based on the 'sourceType' field.
-const inputSchema = z.discriminatedUnion('sourceType', [
-  urlSchema,
-  videoSchema,
-]);
-
 type ActionResponse =
   | { success: true; data: IdentifyMovieOutput }
   | { success: false; error: string };
@@ -32,27 +14,26 @@ type ActionResponse =
 export async function identifyMovieAction(
   formData: FormData
 ): Promise<ActionResponse> {
-  const rawFormData = {
-    sourceType: formData.get('sourceType'),
-    youtubeUrl: formData.get('youtubeUrl'),
-    videoDataUri: formData.get('videoDataUri'),
-  };
-
-  const validation = inputSchema.safeParse(rawFormData);
-
-  if (!validation.success) {
-    return {
-      success: false,
-      error: validation.error.errors.map((e) => e.message).join(', '),
-    };
-  }
+  const sourceType = formData.get('sourceType');
 
   let input: IdentifyMovieInput;
 
-  if (validation.data.sourceType === 'url') {
-    input = { source: { type: 'url', url: validation.data.youtubeUrl } };
+  if (sourceType === 'url') {
+    const youtubeUrl = formData.get('youtubeUrl');
+    const result = z.string().url().safeParse(youtubeUrl);
+    if (!result.success) {
+      return { success: false, error: 'Please enter a valid YouTube URL.' };
+    }
+    input = { source: { type: 'url', url: result.data } };
+  } else if (sourceType === 'video') {
+    const videoDataUri = formData.get('videoDataUri');
+     const result = z.string().startsWith('data:video').safeParse(videoDataUri);
+    if (!result.success) {
+       return { success: false, error: 'Invalid video file format.' };
+    }
+    input = { source: { type: 'video', videoDataUri: result.data } };
   } else {
-    input = { source: { type: 'video', videoDataUri: validation.data.videoDataUri } };
+    return { success: false, error: 'Invalid source type specified.' };
   }
 
   try {
