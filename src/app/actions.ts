@@ -7,7 +7,6 @@ import {
 } from '@/ai/flows/identify-movie-from-youtube-clip';
 import { z } from 'zod';
 
-
 const urlSchema = z.object({
   sourceType: z.literal('url'),
   youtubeUrl: z.string().url({ message: 'Please enter a valid YouTube URL.' }),
@@ -15,11 +14,16 @@ const urlSchema = z.object({
 
 const videoSchema = z.object({
   sourceType: z.literal('video'),
-  videoDataUri: z.string().startsWith('data:video', { message: 'Invalid video file format.' }),
+  videoDataUri: z
+    .string()
+    .startsWith('data:video', { message: 'Invalid video file format.' }),
 });
 
-const inputSchema = z.discriminatedUnion('sourceType', [urlSchema, videoSchema]);
-
+// This is a discriminated union. It will validate against one of the schemas based on the 'sourceType' field.
+const inputSchema = z.discriminatedUnion('sourceType', [
+  urlSchema,
+  videoSchema,
+]);
 
 type ActionResponse =
   | { success: true; data: IdentifyMovieOutput }
@@ -28,32 +32,34 @@ type ActionResponse =
 export async function identifyMovieAction(
   formData: FormData
 ): Promise<ActionResponse> {
-  const sourceType = formData.get('sourceType') as 'url' | 'video';
-  
+  const rawFormData = {
+    sourceType: formData.get('sourceType'),
+    youtubeUrl: formData.get('youtubeUrl'),
+    videoDataUri: formData.get('videoDataUri'),
+  };
+
+  const validation = inputSchema.safeParse(rawFormData);
+
+  if (!validation.success) {
+    return {
+      success: false,
+      error: validation.error.errors.map((e) => e.message).join(', '),
+    };
+  }
+
   let input: IdentifyMovieInput;
 
-  if (sourceType === 'url') {
-    const youtubeUrl = formData.get('youtubeUrl') as string;
-    const validation = urlSchema.safeParse({ sourceType, youtubeUrl });
-    if (!validation.success) {
-      return { success: false, error: validation.error.errors.map((e) => e.message).join(', ') };
-    }
+  if (validation.data.sourceType === 'url') {
     input = { source: { type: 'url', url: validation.data.youtubeUrl } };
-  } else if (sourceType === 'video') {
-    const videoDataUri = formData.get('videoDataUri') as string;
-    const validation = videoSchema.safeParse({ sourceType, videoDataUri });
-     if (!validation.success) {
-      return { success: false, error: validation.error.errors.map((e) => e.message).join(', ') };
-    }
-    input = { source: { type: 'video', videoDataUri: validation.data.videoDataUri } };
   } else {
-    return { success: false, error: 'Invalid source type.' };
+    input = { source: { type: 'video', videoDataUri: validation.data.videoDataUri } };
   }
 
   try {
     const result = await identifyMovie(input);
+    // Ensure the poster URL is a valid http(s) URL before returning.
     if (result.moviePosterUrl && !result.moviePosterUrl.startsWith('http')) {
-        result.moviePosterUrl = '';
+      result.moviePosterUrl = '';
     }
     return { success: true, data: result };
   } catch (error) {
