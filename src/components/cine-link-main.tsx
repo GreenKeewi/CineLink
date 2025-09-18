@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { identifyMovieAction, IdentifyMovieOutput } from '@/app/actions';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,8 @@ import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from './ui/input';
+
+const HISTORY_STORAGE_KEY = 'cinelink_history';
 
 export default function CineLinkMain() {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,6 +23,27 @@ export default function CineLinkMain() {
   const [activeTab, setActiveTab] = useState('youtube');
 
   const { toast } = useToast();
+
+  useEffect(() => {
+    try {
+      const storedHistory = localStorage.getItem(HISTORY_STORAGE_KEY);
+      if (storedHistory) {
+        setHistory(JSON.parse(storedHistory));
+      }
+    } catch (error) {
+      console.error('Failed to load history from localStorage', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (history.length > 0) {
+        localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+      }
+    } catch (error) {
+      console.error('Failed to save history to localStorage', error);
+    }
+  }, [history]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -102,16 +102,16 @@ export default function MovieCard({
       )}
     >
       <div className="relative aspect-[2/3] w-full overflow-hidden">
-        {hasPoster ? (
-          <Image
-            src={imageUrl}
-            alt={`Poster for ${movie.movieTitle}`}
-            fill
-            className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-muted/50">
+        <Image
+          src={imageUrl}
+          alt={`Poster for ${movie.movieTitle}`}
+          fill
+          className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          data-ai-hint={hasPoster ? undefined : placeholderImage.imageHint}
+        />
+        {!hasPoster && (
+           <div className="absolute inset-0 flex h-full w-full items-center justify-center bg-muted/50">
             <Clapperboard className="h-16 w-16 text-muted-foreground/50" />
           </div>
         )}
