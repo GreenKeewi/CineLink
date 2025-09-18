@@ -41,7 +41,7 @@ Your task is to analyze the video content to accurately identify the movie it is
 - You MUST find and provide a valid, public URL for the movie's poster image in 'moviePosterUrl'.
 - If you cannot confidently identify the movie, set 'movieFound' to false and return empty strings for the other fields.
 
-Video: {{media url=youtubeUrl}}
+Video: {{media url=youtubeUrl contentType="video/mp4"}}
 `,
 });
 
