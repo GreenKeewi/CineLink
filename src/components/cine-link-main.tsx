@@ -66,22 +66,22 @@ export default function CineLinkMain() {
 
   return (
     <div className="w-full max-w-3xl">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-4">
-        <TabsList className="grid w-full grid-cols-2">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-6">
+        <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
           <TabsTrigger value="description">
-            <Quote className="mr-2" /> Describe Movie
+            <Quote className="mr-2" /> Describe
           </TabsTrigger>
           <TabsTrigger value="youtube">
             <Youtube className="mr-2" /> YouTube Link
           </TabsTrigger>
         </TabsList>
-        <form onSubmit={handleSubmit} className="flex w-full flex-col items-center gap-4 mt-4">
-          <TabsContent value="description" className="w-full">
+        <form onSubmit={handleSubmit} className="flex w-full flex-col items-center gap-4 mt-6">
+          <TabsContent value="description" className="w-full mt-0">
             <div className="relative w-full">
               <Textarea
                 name="description"
-                placeholder="Describe the movie... e.g., 'A young boy finds an alien in his shed...'"
-                className="h-24 text-base resize-none"
+                placeholder="e.g., 'A young boy finds an alien in his shed...'"
+                className="h-28 resize-none border-2 bg-secondary/50 p-4 text-base focus:bg-background"
                 disabled={isLoading}
                 required={activeTab === 'description'}
                 minLength={10}
@@ -89,13 +89,13 @@ export default function CineLinkMain() {
               />
             </div>
           </TabsContent>
-          <TabsContent value="youtube" className="w-full">
+          <TabsContent value="youtube" className="w-full mt-0">
              <div className="relative w-full">
               <Input
                 name="youtubeUrl"
                 type="url"
                 placeholder="Paste a YouTube link here..."
-                className="h-12 text-base"
+                className="h-14 border-2 bg-secondary/50 p-4 text-base focus:bg-background"
                 disabled={isLoading}
                 required={activeTab === 'youtube'}
                 aria-label="YouTube URL"
@@ -106,16 +106,17 @@ export default function CineLinkMain() {
             type="submit"
             disabled={isLoading}
             size="lg"
-            className="h-12 w-full md:w-48"
+            variant="secondary"
+            className="h-14 w-full md:w-56 text-base font-bold"
           >
             {isLoading ? <Loader2 className="animate-spin" /> : <Film />}
-            <span className="ml-2">Identify Movie</span>
+            <span>Identify Movie</span>
           </Button>
         </form>
       </Tabs>
 
 
-      <div className="mt-8 min-h-[200px]">
+      <div className="mt-12 min-h-[200px]">
         {isLoading && (
           <div className="flex flex-col items-center justify-center gap-4 text-center">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -144,7 +145,7 @@ export default function CineLinkMain() {
       </div>
 
       {history.length > 0 && (
-        <div className="mt-16">
+        <div className="mt-24">
           <div className="mb-6 flex items-center gap-3">
             <History className="h-6 w-6 text-primary" />
             <h2 className="font-headline text-3xl font-semibold tracking-tight">
@@ -152,7 +153,7 @@ export default function CineLinkMain() {
             </h2>
           </div>
           <Separator className="mb-8 bg-border/50" />
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {history.map((movie, index) => (
               <MovieCard key={`${movie.movieTitle}-${index}`} movie={movie} />
             ))}

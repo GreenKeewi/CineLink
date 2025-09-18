@@ -35,13 +35,13 @@ export default function MovieCard({
   return (
     <Card
       className={cn(
-        'group flex h-full flex-col overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10',
+        'group flex h-full flex-col overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10',
         isFeatured
-          ? 'border-primary/30'
-          : 'bg-card'
+          ? 'border-2 border-primary/20 bg-transparent'
+          : 'border-border bg-card'
       )}
     >
-       <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
+       <div className="relative aspect-video w-full overflow-hidden bg-muted/50">
          {hasPoster ? (
             <Image
               src={imageUrl}
@@ -52,7 +52,7 @@ export default function MovieCard({
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
-              <Clapperboard className="h-16 w-16 text-muted-foreground" />
+              <Clapperboard className="h-16 w-16 text-muted-foreground/50" />
             </div>
           )}
       </div>
