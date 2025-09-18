@@ -31,16 +31,77 @@ export default function MovieCard({
     movie.moviePosterUrl && movie.moviePosterUrl.startsWith('http');
   const imageUrl = hasPoster ? movie.moviePosterUrl : placeholderImage.imageUrl;
 
+  if (isFeatured) {
+    return (
+      <Card className="grid md:grid-cols-2 gap-8 items-start bg-card p-6 md:p-8 rounded-xl border-2 border-primary/20">
+        <div className="relative aspect-[2/3] w-full overflow-hidden rounded-lg">
+          {hasPoster ? (
+            <Image
+              src={imageUrl}
+              alt={`Poster for ${movie.movieTitle}`}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-muted/50">
+              <Clapperboard className="h-24 w-24 text-muted-foreground/50" />
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col h-full">
+          <CardHeader>
+            <CardTitle className="font-headline tracking-tight text-3xl">
+              {movie.movieTitle}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex-grow pt-0">
+            <CardDescription className="leading-relaxed text-base text-foreground/80">
+              {movie.movieDetails}
+            </CardDescription>
+          </CardContent>
+
+          {movie.purchaseLinks && movie.purchaseLinks.length > 0 && (
+            <>
+              <Separator className="my-4" />
+              <CardFooter className="flex-col items-start gap-4">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Where to Watch
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {movie.purchaseLinks.map((link) => (
+                    <Button
+                      key={link.service}
+                      asChild
+                      variant="outline"
+                      size="sm"
+                    >
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ShoppingCart className="mr-2" />
+                        {link.service}
+                      </a>
+                    </Button>
+                  ))}
+                </div>
+              </CardFooter>
+            </>
+          )}
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <Card
       className={cn(
-        'group flex h-full flex-col overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 bg-card rounded-xl border-2',
-        isFeatured
-          ? 'border-primary/20'
-          : 'border-transparent'
+        'group flex h-full flex-col overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 bg-card rounded-xl border-2 border-transparent'
       )}
     >
-      <div className="relative aspect-video w-full overflow-hidden">
+      <div className="relative aspect-[2/3] w-full overflow-hidden">
         {hasPoster ? (
           <Image
             src={imageUrl}
@@ -56,23 +117,13 @@ export default function MovieCard({
         )}
       </div>
       <CardHeader>
-        <CardTitle
-          className={cn(
-            'font-headline tracking-tight',
-            isFeatured ? 'text-3xl' : 'text-xl'
-          )}
-        >
+        <CardTitle className={cn('font-headline tracking-tight text-xl')}>
           {movie.movieTitle}
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-grow pt-0">
         <CardDescription
-          className={cn(
-            'leading-relaxed',
-            isFeatured
-              ? 'text-base text-foreground/80'
-              : 'text-sm text-muted-foreground'
-          )}
+          className={cn('leading-relaxed text-sm text-muted-foreground')}
         >
           {movie.movieDetails}
         </CardDescription>

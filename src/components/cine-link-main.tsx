@@ -11,10 +11,11 @@ import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from './ui/input';
 
-
 export default function CineLinkMain() {
   const [isLoading, setIsLoading] = useState(false);
-  const [currentMovie, setCurrentMovie] = useState<IdentifyMovieOutput | null>(null);
+  const [currentMovie, setCurrentMovie] = useState<IdentifyMovieOutput | null>(
+    null
+  );
   const [movieNotFound, setMovieNotFound] = useState(false);
   const [history, setHistory] = useState<IdentifyMovieOutput[]>([]);
   const [activeTab, setActiveTab] = useState('youtube');
@@ -29,7 +30,7 @@ export default function CineLinkMain() {
 
     const formData = new FormData(event.currentTarget);
     formData.append('inputType', activeTab);
-    
+
     const result = await identifyMovieAction(formData);
 
     if (result.success && result.data) {
@@ -37,8 +38,8 @@ export default function CineLinkMain() {
         const newMovie = result.data;
         setCurrentMovie(newMovie);
         // Add to history only if it's a new movie
-        if (!history.some(m => m.movieTitle === newMovie.movieTitle)) {
-           setHistory((prevHistory) => [newMovie, ...prevHistory]);
+        if (!history.some((m) => m.movieTitle === newMovie.movieTitle)) {
+          setHistory((prevHistory) => [newMovie, ...prevHistory]);
         }
       } else {
         setMovieNotFound(true);
@@ -47,7 +48,8 @@ export default function CineLinkMain() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: result.error || 'An unknown error occurred. Please try again.',
+        description:
+          result.error || 'An unknown error occurred. Please try again.',
       });
     }
 
@@ -57,7 +59,11 @@ export default function CineLinkMain() {
 
   return (
     <div className="w-full max-w-3xl">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full mb-6"
+      >
         <TabsList className="grid w-full grid-cols-2 bg-card border">
           <TabsTrigger value="youtube">
             <Youtube className="mr-2" /> YouTube Link
@@ -66,7 +72,10 @@ export default function CineLinkMain() {
             <Quote className="mr-2" /> Describe
           </TabsTrigger>
         </TabsList>
-        <form onSubmit={handleSubmit} className="flex w-full flex-col items-center gap-4 mt-6">
+        <form
+          onSubmit={handleSubmit}
+          className="flex w-full flex-col items-center gap-4 mt-6"
+        >
           <TabsContent value="description" className="w-full mt-0">
             <div className="relative w-full">
               <Textarea
@@ -81,7 +90,7 @@ export default function CineLinkMain() {
             </div>
           </TabsContent>
           <TabsContent value="youtube" className="w-full mt-0">
-             <div className="relative w-full">
+            <div className="relative w-full">
               <Input
                 name="youtubeUrl"
                 type="url"
@@ -105,8 +114,7 @@ export default function CineLinkMain() {
         </form>
       </Tabs>
 
-
-      <div className="mt-12 min-h-[200px]">
+      <div className="mt-12 min-h-[450px]">
         {isLoading && (
           <div className="flex flex-col items-center justify-center gap-4 text-center">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -127,8 +135,8 @@ export default function CineLinkMain() {
           <div className="flex flex-col items-center justify-center gap-4 text-center animate-in fade-in-0 duration-500">
             <SearchX className="h-10 w-10 text-destructive" />
             <p className="text-muted-foreground">
-              Could not identify a movie. Please try being more
-              specific or use a different clip.
+              Could not identify a movie. Please try being more specific or use a
+              different clip.
             </p>
           </div>
         )}
