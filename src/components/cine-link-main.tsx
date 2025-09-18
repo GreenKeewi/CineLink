@@ -137,6 +137,10 @@ export default function CineLinkMain() {
         </form>
       </Tabs>
 
+      <p className="text-xs text-muted-foreground text-center -mt-2 mb-8">
+        Disclaimer: Our AI detection may not always be correct.
+      </p>
+
       <div className="mt-12 min-h-[450px]">
         {isLoading && (
           <div className="flex flex-col items-center justify-center gap-4 text-center">
