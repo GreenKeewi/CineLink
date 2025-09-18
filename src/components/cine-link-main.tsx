@@ -80,6 +80,8 @@ export default function CineLinkMain() {
     (event.target as HTMLFormElement).reset();
   };
 
+  const showResultsContainer = isLoading || currentMovie || movieNotFound;
+
   return (
     <div className="w-full max-w-3xl">
       <Tabs
@@ -141,33 +143,35 @@ export default function CineLinkMain() {
         Disclaimer: Our AI detection may not always be correct.
       </p>
 
-      <div className="mt-8 min-h-[450px]">
-        {isLoading && (
-          <div className="flex flex-col items-center justify-center gap-4 text-center">
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <p className="text-muted-foreground">
-              Analyzing... this may take a moment.
-            </p>
-          </div>
-        )}
-        {currentMovie && (
-          <div
-            className="animate-in fade-in-0 zoom-in-95 duration-500"
-            key={currentMovie.movieTitle}
-          >
-            <MovieCard movie={currentMovie} isFeatured={true} />
-          </div>
-        )}
-        {movieNotFound && (
-          <div className="flex flex-col items-center justify-center gap-4 text-center animate-in fade-in-0 duration-500">
-            <SearchX className="h-10 w-10 text-destructive" />
-            <p className="text-muted-foreground">
-              Could not identify a movie. Please try being more specific or use a
-              different clip.
-            </p>
-          </div>
-        )}
-      </div>
+      {showResultsContainer && (
+        <div className="mt-8 min-h-[450px]">
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center gap-4 text-center">
+              <Loader2 className="h-10 w-10 animate-spin text-primary" />
+              <p className="text-muted-foreground">
+                Analyzing... this may take a moment.
+              </p>
+            </div>
+          )}
+          {currentMovie && (
+            <div
+              className="animate-in fade-in-0 zoom-in-95 duration-500"
+              key={currentMovie.movieTitle}
+            >
+              <MovieCard movie={currentMovie} isFeatured={true} />
+            </div>
+          )}
+          {movieNotFound && (
+            <div className="flex flex-col items-center justify-center gap-4 text-center animate-in fade-in-0 duration-500">
+              <SearchX className="h-10 w-10 text-destructive" />
+              <p className="text-muted-foreground">
+                Could not identify a movie. Please try being more specific or use a
+                different clip.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {history.length > 0 && (
         <div className="mt-12">
