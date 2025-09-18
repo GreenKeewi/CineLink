@@ -45,9 +45,10 @@ export async function identifyMovieAction(
     return { success: true, data: aiResult };
   } catch (error) {
     console.error('Error identifying movie:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     return {
       success: false,
-      error: 'AI analysis failed. Please check your input or try again later.',
+      error: `AI analysis failed: ${errorMessage}`,
     };
   }
 }
