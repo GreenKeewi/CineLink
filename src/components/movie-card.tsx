@@ -64,11 +64,11 @@ export default function MovieCard({
           {movie.purchaseLinks && movie.purchaseLinks.length > 0 && (
             <>
               <Separator className="my-4" />
-              <CardFooter className="flex-col items-start gap-4">
-                <h3 className="text-sm font-semibold text-foreground">
+              <CardFooter className="flex-col items-start gap-4 p-0">
+                <h3 className="text-sm font-semibold text-foreground px-6">
                   Where to Watch
                 </h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 px-6">
                   {movie.purchaseLinks.map((link) => (
                     <Button
                       key={link.service}
@@ -116,18 +116,47 @@ export default function MovieCard({
           </div>
         )}
       </div>
-      <CardHeader className="p-4">
-        <CardTitle className={cn('font-headline tracking-tight text-lg')}>
-          {movie.movieTitle}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex-grow p-4 pt-0">
-        <CardDescription
-          className={cn('leading-relaxed text-xs text-muted-foreground line-clamp-3')}
-        >
-          {movie.movieDetails}
-        </CardDescription>
-      </CardContent>
+      <div className="flex flex-col flex-grow p-4">
+        <CardHeader className="p-0">
+          <CardTitle className={cn('font-headline tracking-tight text-lg')}>
+            {movie.movieTitle}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex-grow p-0 pt-2">
+          <CardDescription
+            className={cn('leading-relaxed text-xs text-muted-foreground line-clamp-2')}
+          >
+            {movie.movieDetails}
+          </CardDescription>
+        </CardContent>
+        {movie.purchaseLinks && movie.purchaseLinks.length > 0 && (
+            <CardFooter className="flex-col items-start gap-2 p-0 pt-4">
+              <h3 className="text-xs font-semibold text-foreground">
+                Where to Watch
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {movie.purchaseLinks.map((link) => (
+                  <Button
+                    key={link.service}
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-7 px-2"
+                  >
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <ShoppingCart className="mr-1.5 size-3" />
+                      {link.service}
+                    </a>
+                  </Button>
+                ))}
+              </div>
+            </CardFooter>
+        )}
+      </div>
     </Card>
   );
 }
