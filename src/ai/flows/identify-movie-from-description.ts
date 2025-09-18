@@ -16,7 +16,7 @@ const IdentifyMovieOutputSchema = z.object({
   movieFound: z.boolean().describe('Whether a movie was successfully identified from the description.'),
   movieTitle: z.string().describe('The title of the identified movie. If not found, this will be an empty string.'),
   movieDetails: z.string().describe('Additional details about the identified movie (e.g., release year, a brief plot summary). If not found, this will be an empty string.'),
-  moviePosterUrl: z.string().describe("A URL for the movie poster image. Use a public, directly accessible URL from a reliable source like The Movie Database (TMDb) or Wikimedia. If not found, this will be an empty string."),
+  moviePosterUrl: z.string().describe("A URL for the movie poster image. Use a public, directly accessible URL from a reliable source like IMDb. If not found, this will be an empty string."),
   purchaseLinks: z.array(z.object({
     service: z.string().describe("The name of the service, e.g., 'Amazon Prime', 'Apple TV'."),
     url: z.string().url().describe("The URL to rent or buy the movie on that service. Use a search URL if a direct affiliate link isn't possible.")
@@ -41,7 +41,7 @@ Your task is to accurately identify the movie from the provided description.
 - If you can confidently identify the movie, set 'movieFound' to true.
 - Provide the 'movieTitle'.
 - Provide 'movieDetails', including the release year and a brief, one-sentence plot summary.
-- You MUST find and provide a valid, public URL for the movie's poster image in 'moviePosterUrl'. Prioritize sources like The Movie Database (image.tmdb.org) or Wikimedia (upload.wikimedia.org).
+- You MUST find and provide a valid, public URL for the movie's poster image in 'moviePosterUrl'. Prioritize getting the image from IMDb (Internet Movie Database).
 - Find and provide 'purchaseLinks' for at least two major platforms (like Amazon Prime Video, Apple TV, Google Play) where the user can rent or buy the movie. Use search URLs if direct affiliate links cannot be found.
 - If you cannot confidently identify the movie, set 'movieFound' to false and return empty strings and empty arrays for the other fields.
 
