@@ -21,12 +21,6 @@ type ActionResponse =
   | { success: true; data: IdentifyMovieOutput }
   | { success: false; error: string };
 
-const sharedValidation = {
-  movieFound: z.boolean(),
-  movieTitle: z.string(),
-  movieDetails: z.string(),
-  moviePosterUrl: z.string(),
-}
 
 const DescriptionInputSchema = z.object({
   description: z.string().min(10, { message: "Please provide a more detailed description." }),
@@ -43,7 +37,7 @@ export async function identifyMovieAction(
   try {
     const inputType = formData.get('inputType');
 
-    let aiResult: IdentifyMovieOutput;
+    let aiResult;
 
     if (inputType === 'description') {
       const description = formData.get('description');
@@ -63,12 +57,21 @@ export async function identifyMovieAction(
        return { success: false, error: 'Invalid input type.' };
     }
     
-    // Ensure the poster URL is a valid http(s) URL before returning.
-    if (aiResult.moviePosterUrl && !aiResult.moviePosterUrl.startsWith('http')) {
-      aiResult.moviePosterUrl = '';
+    // Construct the poster URL from the TMDb path
+    let moviePosterUrl = '';
+    if (aiResult.tmdbPosterPath) {
+        moviePosterUrl = `https://image.tmdb.org/t/p/w500${aiResult.tmdbPosterPath}`;
+    }
+
+    const responseData: IdentifyMovieOutput = {
+        movieFound: aiResult.movieFound,
+        movieTitle: aiResult.movieTitle,
+        movieDetails: aiResult.movieDetails,
+        moviePosterUrl: moviePosterUrl,
+        purchaseLinks: aiResult.purchaseLinks
     }
     
-    return { success: true, data: aiResult };
+    return { success: true, data: responseData };
   } catch (error) {
     console.error('Error identifying movie:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
