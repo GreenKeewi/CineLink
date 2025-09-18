@@ -17,6 +17,10 @@ const IdentifyMovieOutputSchema = z.object({
   movieTitle: z.string().describe('The title of the identified movie. If not found, this will be an empty string.'),
   movieDetails: z.string().describe('Additional details about the identified movie (e.g., release year, a brief plot summary). If not found, this will be an empty string.'),
   moviePosterUrl: z.string().describe("A URL for the movie poster image. Use a public, directly accessible URL. If not found, this will be an empty string."),
+  purchaseLinks: z.array(z.object({
+    service: z.string().describe("The name of the service, e.g., 'Amazon Prime', 'Apple TV'."),
+    url: z.string().url().describe("The URL to rent or buy the movie on that service. Use a search URL if a direct affiliate link isn't possible.")
+  })).describe("A list of links to buy or rent the movie. Provide at least two if possible.")
 });
 
 export async function identifyMovieFromDescription(
@@ -38,7 +42,8 @@ Your task is to accurately identify the movie from the provided description.
 - Provide the 'movieTitle'.
 - Provide 'movieDetails', including the release year and a brief, one-sentence plot summary.
 - You MUST find and provide a valid, public URL for the movie's poster image in 'moviePosterUrl'.
-- If you cannot confidently identify the movie, set 'movieFound' to false and return empty strings for the other fields.
+- Find and provide 'purchaseLinks' for at least two major platforms (like Amazon Prime Video, Apple TV, Google Play) where the user can rent or buy the movie. Use search URLs if direct affiliate links cannot be found.
+- If you cannot confidently identify the movie, set 'movieFound' to false and return empty strings and empty arrays for the other fields.
 
 Description: {{{description}}}
 `,

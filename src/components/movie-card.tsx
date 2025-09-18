@@ -2,22 +2,20 @@ import Image from 'next/image';
 import {
   Card,
   CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from '@/components/ui/card';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
-import { Clapperboard } from 'lucide-react';
-
-type Movie = {
-  movieTitle: string;
-  movieDetails: string;
-  moviePosterUrl: string;
-};
+import { Clapperboard, ShoppingCart } from 'lucide-react';
+import { IdentifyMovieOutput } from '@/app/actions';
+import { Button } from './ui/button';
+import { Separator } from './ui/separator';
 
 type MovieCardProps = {
-  movie: Movie;
+  movie: IdentifyMovieOutput;
   isFeatured?: boolean;
 };
 
@@ -29,32 +27,33 @@ export default function MovieCard({
     PlaceHolderImages.find((p) => p.id === 'movie-placeholder') ||
     PlaceHolderImages[0];
 
-  const hasPoster = movie.moviePosterUrl && movie.moviePosterUrl.startsWith('http');
+  const hasPoster =
+    movie.moviePosterUrl && movie.moviePosterUrl.startsWith('http');
   const imageUrl = hasPoster ? movie.moviePosterUrl : placeholderImage.imageUrl;
 
   return (
     <Card
       className={cn(
-        'group flex h-full flex-col overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10',
+        'group flex h-full flex-col overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 bg-card rounded-xl border-2',
         isFeatured
-          ? 'border-2 border-primary/20 bg-transparent'
-          : 'border-border bg-card'
+          ? 'border-primary/20'
+          : 'border-transparent'
       )}
     >
-       <div className="relative aspect-video w-full overflow-hidden bg-muted/50">
-         {hasPoster ? (
-            <Image
-              src={imageUrl}
-              alt={`Poster for ${movie.movieTitle}`}
-              fill
-              className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center">
-              <Clapperboard className="h-16 w-16 text-muted-foreground/50" />
-            </div>
-          )}
+      <div className="relative aspect-video w-full overflow-hidden">
+        {hasPoster ? (
+          <Image
+            src={imageUrl}
+            alt={`Poster for ${movie.movieTitle}`}
+            fill
+            className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-muted/50">
+            <Clapperboard className="h-16 w-16 text-muted-foreground/50" />
+          </div>
+        )}
       </div>
       <CardHeader>
         <CardTitle
@@ -78,6 +77,27 @@ export default function MovieCard({
           {movie.movieDetails}
         </CardDescription>
       </CardContent>
+
+      {movie.purchaseLinks && movie.purchaseLinks.length > 0 && (
+        <>
+          <Separator className="my-4" />
+          <CardFooter className="flex-col items-start gap-4">
+            <h3 className="text-sm font-semibold text-foreground">
+              Where to Watch
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {movie.purchaseLinks.map((link) => (
+                <Button key={link.service} asChild variant="outline" size="sm">
+                  <a href={link.url} target="_blank" rel="noopener noreferrer">
+                    <ShoppingCart className="mr-2" />
+                    {link.service}
+                  </a>
+                </Button>
+              ))}
+            </div>
+          </CardFooter>
+        </>
+      )}
     </Card>
   );
 }

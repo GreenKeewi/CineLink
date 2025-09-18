@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { identifyMovieAction } from '@/app/actions';
+import { identifyMovieAction, IdentifyMovieOutput } from '@/app/actions';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Film, Loader2, History, SearchX, Quote, Youtube } from 'lucide-react';
@@ -11,18 +11,13 @@ import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from './ui/input';
 
-type Movie = {
-  movieTitle: string;
-  movieDetails: string;
-  moviePosterUrl: string;
-};
 
 export default function CineLinkMain() {
   const [isLoading, setIsLoading] = useState(false);
-  const [currentMovie, setCurrentMovie] = useState<Movie | null>(null);
+  const [currentMovie, setCurrentMovie] = useState<IdentifyMovieOutput | null>(null);
   const [movieNotFound, setMovieNotFound] = useState(false);
-  const [history, setHistory] = useState<Movie[]>([]);
-  const [activeTab, setActiveTab] = useState('description');
+  const [history, setHistory] = useState<IdentifyMovieOutput[]>([]);
+  const [activeTab, setActiveTab] = useState('youtube');
 
   const { toast } = useToast();
 
@@ -39,11 +34,7 @@ export default function CineLinkMain() {
 
     if (result.success && result.data) {
       if (result.data.movieFound && result.data.movieTitle) {
-        const newMovie: Movie = {
-          movieTitle: result.data.movieTitle,
-          movieDetails: result.data.movieDetails,
-          moviePosterUrl: result.data.moviePosterUrl,
-        };
+        const newMovie = result.data;
         setCurrentMovie(newMovie);
         // Add to history only if it's a new movie
         if (!history.some(m => m.movieTitle === newMovie.movieTitle)) {
@@ -67,12 +58,12 @@ export default function CineLinkMain() {
   return (
     <div className="w-full max-w-3xl">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-6">
-        <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
-          <TabsTrigger value="description">
-            <Quote className="mr-2" /> Describe
-          </TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 bg-card border">
           <TabsTrigger value="youtube">
             <Youtube className="mr-2" /> YouTube Link
+          </TabsTrigger>
+          <TabsTrigger value="description">
+            <Quote className="mr-2" /> Describe
           </TabsTrigger>
         </TabsList>
         <form onSubmit={handleSubmit} className="flex w-full flex-col items-center gap-4 mt-6">
@@ -81,7 +72,7 @@ export default function CineLinkMain() {
               <Textarea
                 name="description"
                 placeholder="e.g., 'A young boy finds an alien in his shed...'"
-                className="h-28 resize-none border-2 bg-secondary/50 p-4 text-base focus:bg-background"
+                className="h-28 resize-none rounded-xl border-2 bg-card p-4 text-base focus:bg-background"
                 disabled={isLoading}
                 required={activeTab === 'description'}
                 minLength={10}
@@ -95,7 +86,7 @@ export default function CineLinkMain() {
                 name="youtubeUrl"
                 type="url"
                 placeholder="Paste a YouTube link here..."
-                className="h-14 border-2 bg-secondary/50 p-4 text-base focus:bg-background"
+                className="h-14 rounded-xl border-2 bg-card p-4 text-base focus:bg-background"
                 disabled={isLoading}
                 required={activeTab === 'youtube'}
                 aria-label="YouTube URL"
@@ -106,8 +97,7 @@ export default function CineLinkMain() {
             type="submit"
             disabled={isLoading}
             size="lg"
-            variant="secondary"
-            className="h-14 w-full md:w-56 text-base font-bold"
+            className="h-14 w-full md:w-56 text-base font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
           >
             {isLoading ? <Loader2 className="animate-spin" /> : <Film />}
             <span>Identify Movie</span>

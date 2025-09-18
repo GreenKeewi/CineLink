@@ -9,6 +9,10 @@ const IdentifyMovieOutputSchema = z.object({
   movieTitle: z.string(),
   movieDetails: z.string(),
   moviePosterUrl: z.string(),
+  purchaseLinks: z.array(z.object({
+    service: z.string(),
+    url: z.string().url(),
+  })).optional(),
 });
 export type IdentifyMovieOutput = z.infer<typeof IdentifyMovieOutputSchema>;
 
