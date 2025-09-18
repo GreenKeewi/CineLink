@@ -8,7 +8,7 @@ export default function Home() {
           CineLink
         </h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Identify any movie from a YouTube clip.
+          Describe a movie, and I'll guess the title.
         </p>
       </header>
       <CineLinkMain />

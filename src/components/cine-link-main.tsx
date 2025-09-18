@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { identifyMovieAction } from '@/app/actions';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Film, Loader2, Link as LinkIcon, History, SearchX } from 'lucide-react';
+import { Film, Loader2, History, SearchX, Quote } from 'lucide-react';
 import MovieCard from './movie-card';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
@@ -61,24 +61,24 @@ export default function CineLinkMain() {
 
   return (
     <div className="w-full max-w-3xl">
-      <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
-        <div className="relative w-full flex-grow">
-          <LinkIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            name="youtubeUrl"
-            type="url"
-            placeholder="https://www.youtube.com/watch?v=..."
-            className="h-12 pl-10 text-base"
+      <form onSubmit={handleSubmit} className="flex w-full flex-col items-center gap-4">
+        <div className="relative w-full">
+          <Quote className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+          <Textarea
+            name="description"
+            placeholder="Describe the movie... e.g., 'A young boy finds an alien in his shed...'"
+            className="h-24 pl-10 text-base resize-none"
             disabled={isLoading}
             required
-            aria-label="YouTube clip URL"
+            minLength={10}
+            aria-label="Movie description"
           />
         </div>
         <Button
           type="submit"
           disabled={isLoading}
           size="lg"
-          className="h-12 w-48"
+          className="h-12 w-full md:w-48"
         >
           {isLoading ? <Loader2 className="animate-spin" /> : <Film />}
           <span className="ml-2">Identify Movie</span>
@@ -106,8 +106,8 @@ export default function CineLinkMain() {
           <div className="flex flex-col items-center justify-center gap-4 text-center animate-in fade-in-0 duration-500">
             <SearchX className="h-10 w-10 text-destructive" />
             <p className="text-muted-foreground">
-              Could not identify a movie from the provided link. Please try a
-              different one.
+              Could not identify a movie from your description. Please try being
+              more specific.
             </p>
           </div>
         )}

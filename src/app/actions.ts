@@ -1,12 +1,10 @@
 'use server';
 
-import { identifyMovie } from '@/ai/flows/identify-movie-from-youtube-clip';
+import { identifyMovieFromDescription } from '@/ai/flows/identify-movie-from-description';
 import { z } from 'zod';
 
-// Define the input and output types here, based on the AI flow's schemas.
-// This keeps the "use server" file clean of non-function exports.
 const IdentifyMovieInputSchema = z.object({
-  youtubeUrl: z.string(),
+  description: z.string().min(10, { message: "Please provide a more detailed description." }),
 });
 export type IdentifyMovieInput = z.infer<typeof IdentifyMovieInputSchema>;
 
@@ -27,15 +25,15 @@ export async function identifyMovieAction(
   formData: FormData
 ): Promise<ActionResponse> {
   try {
-    const youtubeUrl = formData.get('youtubeUrl');
-    const result = z.string().url().safeParse(youtubeUrl);
+    const description = formData.get('description');
+    const result = IdentifyMovieInputSchema.safeParse({ description });
     
     if (!result.success) {
-      return { success: false, error: 'Please enter a valid YouTube URL.' };
+      return { success: false, error: result.error.errors[0].message };
     }
 
-    const input: IdentifyMovieInput = { youtubeUrl: result.data };
-    const aiResult = await identifyMovie(input);
+    const input: IdentifyMovieInput = { description: result.data.description };
+    const aiResult = await identifyMovieFromDescription(input);
 
     // Ensure the poster URL is a valid http(s) URL before returning.
     if (aiResult.moviePosterUrl && !aiResult.moviePosterUrl.startsWith('http')) {
