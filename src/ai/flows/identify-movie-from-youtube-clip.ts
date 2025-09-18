@@ -28,6 +28,7 @@ export async function identifyMovie(
 
 const prompt = ai.definePrompt({
   name: 'identifyMoviePrompt',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: IdentifyMovieInputSchema},
   output: {schema: IdentifyMovieOutputSchema},
   prompt: `You are an expert movie identifier. You will be given a YouTube clip URL.
