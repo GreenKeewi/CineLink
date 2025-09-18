@@ -141,7 +141,7 @@ export default function CineLinkMain() {
         Disclaimer: Our AI detection may not always be correct.
       </p>
 
-      <div className="mt-12 min-h-[450px]">
+      <div className="mt-8 min-h-[450px]">
         {isLoading && (
           <div className="flex flex-col items-center justify-center gap-4 text-center">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -170,7 +170,7 @@ export default function CineLinkMain() {
       </div>
 
       {history.length > 0 && (
-        <div className="mt-24">
+        <div className="mt-12">
           <div className="mb-6 flex items-center gap-3">
             <History className="h-6 w-6 text-primary" />
             <h2 className="font-headline text-3xl font-semibold tracking-tight">

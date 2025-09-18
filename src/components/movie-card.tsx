@@ -116,39 +116,18 @@ export default function MovieCard({
           </div>
         )}
       </div>
-      <CardHeader>
-        <CardTitle className={cn('font-headline tracking-tight text-xl')}>
+      <CardHeader className="p-4">
+        <CardTitle className={cn('font-headline tracking-tight text-lg')}>
           {movie.movieTitle}
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-grow pt-0">
+      <CardContent className="flex-grow p-4 pt-0">
         <CardDescription
-          className={cn('leading-relaxed text-sm text-muted-foreground')}
+          className={cn('leading-relaxed text-xs text-muted-foreground line-clamp-3')}
         >
           {movie.movieDetails}
         </CardDescription>
       </CardContent>
-
-      {movie.purchaseLinks && movie.purchaseLinks.length > 0 && (
-        <>
-          <Separator className="my-4" />
-          <CardFooter className="flex-col items-start gap-4">
-            <h3 className="text-sm font-semibold text-foreground">
-              Where to Watch
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {movie.purchaseLinks.map((link) => (
-                <Button key={link.service} asChild variant="outline" size="sm">
-                  <a href={link.url} target="_blank" rel="noopener noreferrer">
-                    <ShoppingCart className="mr-2" />
-                    {link.service}
-                  </a>
-                </Button>
-              ))}
-            </div>
-          </CardFooter>
-        </>
-      )}
     </Card>
   );
 }
