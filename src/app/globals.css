@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 @layer base {
@@ -43,25 +43,25 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
-    --background: 215 19% 9%;
+    --background: 222 24% 13%; /* #222831 */
     --foreground: 210 40% 98%;
-    --card: 211 32% 12%;
+    --card: 211 32% 28%; /* #30475E */
     --card-foreground: 210 40% 98%;
-    --popover: 215 19% 9%;
+    --popover: 222 24% 13%;
     --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 215 19% 9%;
+    --primary: 211 32% 40%; /* Lighter shade of dark blue for primary actions */
+    --primary-foreground: 210 40% 98%;
     --secondary: 211 32% 18%;
     --secondary-foreground: 210 40% 98%;
     --muted: 211 32% 18%;
-    --muted-foreground: 210 20% 75%;
-    --accent: 211 32% 18%;
-    --accent-foreground: 210 40% 98%;
+    --muted-foreground: 0 0% 78%; /* #C8C6C6 */
+    --accent: 0 0% 78%; /* #C8C6C6 */
+    --accent-foreground: 222 24% 13%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 211 32% 18%;
-    --input: 211 32% 18%;
-    --ring: 210 40% 98%;
+    --border: 211 32% 28%;
+    --input: 211 32% 22%;
+    --ring: 0 0% 78%; /* #C8C6C6 */
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
