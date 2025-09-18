@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { identifyMovieAction } from '@/app/actions';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Film, Loader2, History, SearchX, Quote } from 'lucide-react';
+import { Film, Loader2, History, SearchX, Quote, Youtube } from 'lucide-react';
 import MovieCard from './movie-card';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from './ui/input';
 
 type Movie = {
   movieTitle: string;
@@ -20,6 +22,7 @@ export default function CineLinkMain() {
   const [currentMovie, setCurrentMovie] = useState<Movie | null>(null);
   const [movieNotFound, setMovieNotFound] = useState(false);
   const [history, setHistory] = useState<Movie[]>([]);
+  const [activeTab, setActiveTab] = useState('description');
 
   const { toast } = useToast();
 
@@ -30,6 +33,8 @@ export default function CineLinkMain() {
     setMovieNotFound(false);
 
     const formData = new FormData(event.currentTarget);
+    formData.append('inputType', activeTab);
+    
     const result = await identifyMovieAction(formData);
 
     if (result.success && result.data) {
@@ -61,29 +66,54 @@ export default function CineLinkMain() {
 
   return (
     <div className="w-full max-w-3xl">
-      <form onSubmit={handleSubmit} className="flex w-full flex-col items-center gap-4">
-        <div className="relative w-full">
-          <Quote className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
-          <Textarea
-            name="description"
-            placeholder="Describe the movie... e.g., 'A young boy finds an alien in his shed...'"
-            className="h-24 pl-10 text-base resize-none"
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="description">
+            <Quote className="mr-2" /> Describe Movie
+          </TabsTrigger>
+          <TabsTrigger value="youtube">
+            <Youtube className="mr-2" /> YouTube Link
+          </TabsTrigger>
+        </TabsList>
+        <form onSubmit={handleSubmit} className="flex w-full flex-col items-center gap-4 mt-4">
+          <TabsContent value="description" className="w-full">
+            <div className="relative w-full">
+              <Textarea
+                name="description"
+                placeholder="Describe the movie... e.g., 'A young boy finds an alien in his shed...'"
+                className="h-24 text-base resize-none"
+                disabled={isLoading}
+                required={activeTab === 'description'}
+                minLength={10}
+                aria-label="Movie description"
+              />
+            </div>
+          </TabsContent>
+          <TabsContent value="youtube" className="w-full">
+             <div className="relative w-full">
+              <Input
+                name="youtubeUrl"
+                type="url"
+                placeholder="Paste a YouTube link here..."
+                className="h-12 text-base"
+                disabled={isLoading}
+                required={activeTab === 'youtube'}
+                aria-label="YouTube URL"
+              />
+            </div>
+          </TabsContent>
+          <Button
+            type="submit"
             disabled={isLoading}
-            required
-            minLength={10}
-            aria-label="Movie description"
-          />
-        </div>
-        <Button
-          type="submit"
-          disabled={isLoading}
-          size="lg"
-          className="h-12 w-full md:w-48"
-        >
-          {isLoading ? <Loader2 className="animate-spin" /> : <Film />}
-          <span className="ml-2">Identify Movie</span>
-        </Button>
-      </form>
+            size="lg"
+            className="h-12 w-full md:w-48"
+          >
+            {isLoading ? <Loader2 className="animate-spin" /> : <Film />}
+            <span className="ml-2">Identify Movie</span>
+          </Button>
+        </form>
+      </Tabs>
+
 
       <div className="mt-8 min-h-[200px]">
         {isLoading && (
@@ -106,8 +136,8 @@ export default function CineLinkMain() {
           <div className="flex flex-col items-center justify-center gap-4 text-center animate-in fade-in-0 duration-500">
             <SearchX className="h-10 w-10 text-destructive" />
             <p className="text-muted-foreground">
-              Could not identify a movie from your description. Please try being
-              more specific.
+              Could not identify a movie. Please try being more
+              specific or use a different clip.
             </p>
           </div>
         )}
