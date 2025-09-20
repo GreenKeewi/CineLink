@@ -45,7 +45,7 @@ Your task is to accurately identify the movie from the provided clip.
 - Find and provide 'purchaseLinks' for at least two major platforms (like Amazon Prime Video, Apple TV, Google Play) where the user can rent or buy the movie. Use search URLs if direct affiliate links cannot be found.
 - If you cannot confidently identify the movie, set 'movieFound' to false and return empty strings and empty arrays for the other fields.
 
-YouTube Clip: {{media url=youtubeUrl}}
+YouTube Clip: {{media url=youtubeUrl contentType='video/mp4'}}
 `,
 });
 
