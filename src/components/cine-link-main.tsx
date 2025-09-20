@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { identifyMovieAction, IdentifyMovieOutput } from '@/app/actions';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -10,11 +10,13 @@ import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from './ui/input';
+import { Progress } from './ui/progress';
 
 const HISTORY_STORAGE_KEY = 'cinelink_history';
 
 export default function CineLinkMain() {
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [currentMovie, setCurrentMovie] = useState<IdentifyMovieOutput | null>(
     null
   );
@@ -45,6 +47,31 @@ export default function CineLinkMain() {
     }
   }, [history]);
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    if (isLoading) {
+      setProgress(10); // Initial progress
+      timer = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 90) {
+            if (timer) clearInterval(timer);
+            return prev;
+          }
+          return prev + Math.random() * 10;
+        });
+      }, 800);
+    } else {
+      setProgress(100);
+      setTimeout(() => setProgress(0), 500);
+    }
+
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [isLoading]);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
@@ -55,6 +82,8 @@ export default function CineLinkMain() {
     formData.append('inputType', activeTab);
 
     const result = await identifyMovieAction(formData);
+
+    setIsLoading(false);
 
     if (result.success && result.data) {
       if (result.data.movieFound && result.data.movieTitle) {
@@ -75,8 +104,7 @@ export default function CineLinkMain() {
           result.error || 'An unknown error occurred. Please try again.',
       });
     }
-
-    setIsLoading(false);
+    
     (event.target as HTMLFormElement).reset();
   };
 
@@ -144,18 +172,18 @@ export default function CineLinkMain() {
       </p>
 
       {showResultsContainer && (
-        <div className="mt-8 min-h-[450px]">
+        <div className="mt-8 min-h-[450px] flex items-center justify-center">
           {isLoading && (
-            <div className="flex flex-col items-center justify-center gap-4 text-center">
-              <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="flex w-full max-w-sm flex-col items-center justify-center gap-4 text-center">
               <p className="text-muted-foreground">
                 Analyzing... this may take a moment.
               </p>
+              <Progress value={progress} className="w-full" />
             </div>
           )}
           {currentMovie && (
             <div
-              className="animate-in fade-in-0 zoom-in-95 duration-500"
+              className="animate-in fade-in-0 zoom-in-95 duration-500 w-full"
               key={currentMovie.movieTitle}
             >
               <MovieCard movie={currentMovie} isFeatured={true} />
@@ -184,7 +212,9 @@ export default function CineLinkMain() {
           <Separator className="mb-8 bg-border/50" />
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {history.map((movie, index) => (
-              <MovieCard key={`${movie.movieTitle}-${index}`} movie={movie} />
+              <React.Fragment key={`${movie.movieTitle}-${index}`}>
+                <MovieCard movie={movie} />
+              </React.Fragment>
             ))}
           </div>
         </div>
